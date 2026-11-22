@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101d2c">
+<title>General.S.O.M Retail</title>
+<style>
+:root{--navy:#101d2c;--navy2:#172b40;--teal:#12b8a6;--bg:#f3f6f9;--ink:#172334;--muted:#718096;--line:#e5ebf1;--white:#fff;--red:#d94c5c;--green:#14866d}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--ink)}
+button,input,select{font:inherit}button{cursor:pointer;border:0;border-radius:10px;padding:10px 14px;font-weight:650}
+.app{display:flex;min-height:100vh}.sidebar{width:245px;background:var(--navy);color:#dce7f1;padding:24px 16px;display:flex;flex-direction:column;gap:22px}
+.brand{font-weight:850;font-size:20px;letter-spacing:.2px;padding:4px 10px}.brand span{color:var(--teal)}.tag{font-size:11px;color:#8fa5ba;padding:0 10px;margin-top:-18px}
+nav{display:grid;gap:7px}.navbtn{background:transparent;color:#bdcbd8;text-align:left;padding:12px 13px;border-radius:10px}.navbtn.active,.navbtn:hover{background:#233b51;color:white}.navbtn b{display:inline-block;width:25px;color:#7ddbd0}
+.sidebar-bottom{margin-top:auto;background:#1a3045;border-radius:14px;padding:14px;font-size:12px;color:#aebfce;line-height:1.5}
+.main{flex:1;min-width:0}.topbar{height:72px;background:white;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 30px}
+.topbar small{color:var(--muted)}.user{font-size:13px;font-weight:700;background:#e7f7f4;color:#087d70;padding:9px 12px;border-radius:30px}
+.content{padding:28px 30px;max-width:1400px;margin:auto}.pagehead{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:22px}.pagehead h1{font-size:25px;margin:0 0 5px}.pagehead p{margin:0;color:var(--muted);font-size:13px}
+.primary{background:var(--teal);color:#062c2a}.secondary{background:#eaf0f5;color:#26384a}.danger{background:#fff0f1;color:var(--red)}.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;margin-bottom:20px}
+.card{background:white;border:1px solid var(--line);border-radius:15px;padding:18px;box-shadow:0 3px 12px #162a3a08}.metric-label{font-size:12px;color:var(--muted)}.metric{font-size:25px;font-weight:800;margin:9px 0 4px}.metric-note{font-size:11px;color:var(--muted)}
+.panel{background:white;border:1px solid var(--line);border-radius:15px;padding:18px;margin-bottom:18px}.panelhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.panelhead h2{font-size:16px;margin:0}
+table{width:100%;border-collapse:collapse;font-size:13px}th{text-align:left;color:var(--muted);font-weight:650;background:#f8fafc}td,th{padding:12px 10px;border-bottom:1px solid var(--line)}tr:last-child td{border-bottom:0}.pill{font-size:11px;border-radius:30px;padding:5px 8px;background:#e9f7f2;color:var(--green);font-weight:700}.pill.low{background:#fff1e7;color:#b65d20}
+.grid2{display:grid;grid-template-columns:1.3fr 1fr;gap:18px}.formgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.field{display:grid;gap:6px}.field label{font-size:12px;color:#526273;font-weight:650}.field input,.field select,.toolbar input,.toolbar select{width:100%;border:1px solid #dbe3eb;border-radius:9px;padding:10px 11px;background:white;min-width:0}.toolbar{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:13px}.toolbar input{max-width:260px}.actions{display:flex;gap:7px}.empty{text-align:center;color:var(--muted);padding:28px}.hidden{display:none!important}.notice{padding:12px 14px;border-radius:10px;background:#edf8f6;color:#146e64;font-size:12px;margin-bottom:16px}
+.modalback{position:fixed;inset:0;background:#0c1b2bb0;display:grid;place-items:center;padding:15px;z-index:5}.modal{background:white;border-radius:16px;padding:22px;width:min(560px,100%);max-height:90vh;overflow:auto}.modal h2{margin:0 0 18px;font-size:19px}.modalfoot{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+.receipt{font-family:monospace;white-space:pre-wrap;background:#f8fafb;padding:15px;border-radius:10px;font-size:12px}
+@media(max-width:900px){.sidebar{width:200px}.cards{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}}
+@media(max-width:650px){.app{display:block}.sidebar{width:100%;padding:12px;gap:10px}.brand{padding:0 7px}.tag{display:none}nav{display:flex;overflow:auto;gap:5px}.navbtn{white-space:nowrap;padding:9px 11px;font-size:12px}.navbtn b{width:auto;margin-right:5px}.sidebar-bottom{display:none}.topbar{height:55px;padding:0 16px}.content{padding:20px 14px}.pagehead{align-items:flex-start;flex-direction:column}.cards{gap:9px}.card{padding:13px}.metric{font-size:21px}.panel{padding:13px;overflow-x:auto}table{min-width:560px}.formgrid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+<div class="brand">General.<span>S.O.M</span></div><div class="tag">RETAIL MANAGEMENT · MULTI-BUSINESS</div>
+<nav id="nav">
+<button class="navbtn active" data-page="dashboard"><b>▦</b> Overview</button>
+<button class="navbtn" data-page="sales"><b>＋</b> Record sale</button>
+<button class="navbtn" data-page="products"><b>▤</b> Products & stock</button>
+<button class="navbtn" data-page="expenses"><b>↗</b> Expenses</button>
+<button class="navbtn" data-page="purchases"><b>▣</b> Stock purchases</button>
+<button class="navbtn" data-page="customers"><b>♙</b> Customers</button>
+<button class="navbtn" data-page="returns"><b>↩</b> Sales returns</button>
+<button class="navbtn" data-page="suppliers"><b>▣</b> Suppliers</button>
+<button class="navbtn" data-page="reports"><b>▥</b> Reports</button>
+<button class="navbtn" data-page="team"><b>♙</b> Staff & access</button>
+<button class="navbtn" data-page="branches"><b>⌂</b> Branches</button>
+<button class="navbtn" data-page="backup"><b>⇧</b> Backup & data</button>
+<button class="navbtn" data-page="billing"><b>＄</b> Subscription</button>
+<button class="navbtn" data-page="settings"><b>⚙</b> Shop settings</button>
+</nav>
+<div class="sidebar-bottom"><strong>General.S.O.M Retail</strong><br>Version 5 prototype · Local data with backup tools.<br><br>Before using with real customers, connect secure cloud accounts and backups.</div>
+</aside>
+<main class="main">
+<header class="topbar"><div><strong id="shopTitle">My Shop</strong><br><small id="today"></small></div><div class="user">● Demo shop owner</div></header>
+<div class="content">
+<section id="dashboard" class="page">
+<div class="pagehead"><div><h1>Good day 👋</h1><p>Here's what's happening in your shop.</p></div><button class="primary" onclick="openSale()">＋ Record a sale</button></div>
+<div class="notice">Demo mode: sample figures are provided to help you test the system. Add your own products and sales to begin.</div>
+<div class="cards">
+<div class="card"><div class="metric-label">Today's sales</div><div class="metric" id="todaySales">KSh 0</div><div class="metric-note">Recorded transactions today</div></div>
+<div class="card"><div class="metric-label">Today's expenses</div><div class="metric" id="todayExpenses">KSh 0</div><div class="metric-note">Expenses entered today</div></div>
+<div class="card"><div class="metric-label">Estimated gross profit</div><div class="metric" id="grossProfit">KSh 0</div><div class="metric-note">Sales less cost of goods sold</div></div>
+<div class="card"><div class="metric-label">Products in catalogue</div><div class="metric" id="productCount">0</div><div class="metric-note" id="lowCount">0 low-stock alerts</div></div>
+</div>
+<div class="grid2">
+<div class="panel"><div class="panelhead"><h2>Recent sales</h2><button class="secondary" onclick="showPage('sales')">View all</button></div><div id="recentSales"></div></div>
+<div class="panel"><div class="panelhead"><h2>Stock alerts</h2><button class="secondary" onclick="showPage('products')">Manage stock</button></div><div id="stockAlerts"></div></div>
+</div>
+</section>
+<section id="products" class="page hidden">
+<div class="pagehead"><div><h1>Products & stock</h1><p>Manage prices, quantities and stock levels.</p></div><button class="primary" onclick="openProduct()">＋ Add product</button></div>
+<div class="panel"><div class="toolbar"><input id="productSearch" placeholder="Search product or SKU..." oninput="renderProducts()"><select id="stockFilter" onchange="renderProducts()"><option value="all">All stock</option><option value="low">Low stock only</option></select></div><div id="productsTable"></div></div>
+</section>
+<section id="sales" class="page hidden">
+<div class="pagehead"><div><h1>Sales</h1><p>Review transactions or record a new sale.</p></div><button class="primary" onclick="openSale()">＋ Record a sale</button></div>
+<div class="panel"><div class="toolbar"><input id="salesSearch" placeholder="Search receipt..." oninput="renderSales()"></div><div id="salesTable"></div></div>
+</section>
+<section id="expenses" class="page hidden">
+<div class="pagehead"><div><h1>Expenses</h1><p>Track rent, transport, wages and other costs.</p></div><button class="primary" onclick="openExpense()">＋ Add expense</button></div>
+<div class="panel"><div id="expensesTable"></div></div>
+</section>
+<section id="purchases" class="page hidden">
+<div class="pagehead"><div><h1>Stock purchases</h1><p>Record stock received from suppliers and update inventory.</p></div><button class="primary" onclick="openPurchase()">＋ Record purchase</button></div>
+<div class="notice">When a purchase is received, product quantities and recorded stock costs are updated.</div>
+<div class="panel"><div id="purchasesTable"></div></div>
+</section>
+<section id="returns" class="page hidden">
+<div class="pagehead"><div><h1>Sales returns</h1><p>Record returned items and put resalable stock back into inventory.</p></div><button class="primary" onclick="openReturn()">＋ Record return</button></div>
+<div class="notice">Returns are linked to an original receipt. Returned quantities cannot exceed the quantity originally sold, less earlier returns.</div>
+<div class="panel"><div id="returnsTable"></div></div>
+</section>
+<section id="customers" class="page hidden">
+<div class="pagehead"><div><h1>Customers</h1><p>Keep customer contacts and purchase history.</p></div><button class="primary" onclick="openPerson('customer')">＋ Add customer</button></div>
+<div class="panel"><div class="toolbar"><input id="customerSearch" placeholder="Search customers..." oninput="renderPeople('customer')"></div><div id="customersTable"></div></div>
+</section>
+<section id="suppliers" class="page hidden">
+<div class="pagehead"><div><h1>Suppliers</h1><p>Manage the people and businesses that supply your stock.</p></div><button class="primary" onclick="openPerson('supplier')">＋ Add supplier</button></div>
+<div class="panel"><div class="toolbar"><input id="supplierSearch" placeholder="Search suppliers..." oninput="renderPeople('supplier')"></div><div id="suppliersTable"></div></div>
+</section>
+<section id="reports" class="page hidden">
+<div class="pagehead"><div><h1>Business reports</h1><p>A simple summary of recorded activity.</p></div><button class="secondary" onclick="window.print()">Print report</button></div>
+<div class="cards"><div class="card"><div class="metric-label">All-time sales</div><div class="metric" id="allSales">KSh 0</div></div><div class="card"><div class="metric-label">All-time expenses</div><div class="metric" id="allExpenses">KSh 0</div></div><div class="card"><div class="metric-label">Units sold</div><div class="metric" id="unitsSold">0</div></div><div class="card"><div class="metric-label">Transactions</div><div class="metric" id="transactionCount">0</div></div></div>
+<div class="panel"><h2>Sales history</h2><div id="reportSales"></div></div>
+</section>
+<section id="settings" class="page hidden">
+<div class="pagehead"><div><h1>Shop settings</h1><p>Set your business name, business type and default currency.</p></div></div>
+<div class="panel" style="max-width:600px"><div class="formgrid"><div class="field"><label>Business name</label><input id="settingName" value="My Shop"></div><div class="field"><label>Business type</label><select id="settingBusinessType"><option value="Small shop">Small shop / kiosk</option><option value="Supermarket">Supermarket / mini-market</option><option value="Wholesaler">Wholesaler / distributor</option></select></div><div class="field"><label>Currency</label><select id="settingCurrency"><option value="KSh">Kenyan Shilling (KSh)</option><option value="MUR">Mauritian Rupee (MUR)</option><option value="$">US Dollar ($)</option></select></div></div><div style="margin-top:16px"><button class="primary" onclick="saveSettings()">Save settings</button></div><hr style="border:0;border-top:1px solid var(--line);margin:22px 0"><strong>Data and account</strong><p style="font-size:13px;color:var(--muted);line-height:1.6">This version stores records in this browser on this device. Staff and branch records are management tools, not secure logins or shared cloud accounts. Cloud sync, secure authentication and subscription payments still require backend integrations.</p><button class="secondary" onclick="exportData()">Export my data (JSON)</button> <button class="danger" onclick="resetData()">Reset demo data</button></div>
+<div class="panel" style="max-width:600px"><h2>Subscription concept</h2><p style="color:var(--muted);font-size:13px">14-day trial · Monthly subscription planned. Payments are not enabled in this prototype.</p><div class="metric">KSh 1,000 <span style="font-size:13px;color:var(--muted);font-weight:500">/ month (proposed)</span></div></div>
+</section>
+<section id="team" class="page hidden">
+  <div class="pagehead"><div><h1>Staff & access</h1><p>Organise your team and assign job roles.</p></div><button class="primary" onclick="openStaff()">＋ Add staff member</button></div>
+  <div class="notice">Prototype mode: staff records and role labels are stored on this device. Secure sign-in and enforced permissions require cloud authentication.</div>
+  <div class="panel"><div id="staffTable"></div></div>
+</section>
+<section id="branches" class="page hidden">
+  <div class="pagehead"><div><h1>Branches</h1><p>Keep a record of your business locations.</p></div><button class="primary" onclick="openBranch()">＋ Add branch</button></div>
+  <div class="notice">Branch records are available locally. Shared stock, sales and staff across branches require a connected cloud database.</div>
+  <div class="panel"><div id="branchesTable"></div></div>
+</section>
+<section id="backup" class="page hidden">
+  <div class="pagehead"><div><h1>Backup & data</h1><p>Protect your business records and move them between devices.</p></div></div>
+  <div class="grid2">
+    <div class="panel"><h2>Export a backup</h2><p style="font-size:13px;color:var(--muted)">Download products, sales, returns, purchases, expenses, customers, suppliers, staff, branches and settings as a JSON backup.</p><button class="primary" onclick="exportData()">Download backup</button></div>
+    <div class="panel"><h2>Restore a backup</h2><p style="font-size:13px;color:var(--muted)">Restore a previously exported General.S.O.M Retail JSON file on this device.</p><input id="restoreFile" type="file" accept=".json,application/json"><button class="secondary" style="margin-top:10px" onclick="restoreData()">Restore backup</button></div>
+  </div>
+  <div class="notice">Important: this is a manual device backup, not automatic cloud backup. Keep a copy somewhere safe. Cloud backup and multi-device sync will need a backend connection.</div>
+</section>
+<section id="billing" class="page hidden">
+  <div class="pagehead"><div><h1>Subscription</h1><p>Plan and payment settings for your retail software.</p></div></div>
+  <div class="cards">
+    <div class="card"><div class="metric-label">Proposed plan</div><div class="metric">Retail Pro</div><div class="metric-note">For growing retail businesses</div></div>
+    <div class="card"><div class="metric-label">Proposed price</div><div class="metric">KSh 1,000</div><div class="metric-note">Per month, subject to final pricing</div></div>
+    <div class="card"><div class="metric-label">Trial concept</div><div class="metric">14 days</div><div class="metric-note">Trial activation is not implemented</div></div>
+    <div class="card"><div class="metric-label">Payment status</div><div class="metric">Not connected</div><div class="metric-note">No real payments are being collected</div></div>
+  </div>
+  <div class="panel"><h2>Payment integration roadmap</h2><p style="font-size:13px;color:var(--muted);line-height:1.7">The system is prepared for a subscription checkout flow. Live M-Pesa or card billing requires a payment provider account, secure server-side integration, transaction verification and webhook configuration. Never put secret payment keys inside this HTML file.</p></div>
+</section>
+</div>
+</main>
+</div>
+<div id="modalRoot"></div>
+<script>
+const KEY='gsom-retail-v1';
+let state=load();
+if(!state.businessType) state.businessType='Small shop';
+if(!state.staff) state.staff=[];
+if(!state.branches) state.branches=[];
+if(!state.purchases) state.purchases=[];
+if(!state.returns) state.returns=[];
+function load(){try{let x=JSON.parse(localStorage.getItem(KEY));if(x)return x}catch(e){}return {shop:'My Shop',businessType:'Small shop',currency:'KSh',products:[],sales:[],expenses:[],customers:[],suppliers:[],staff:[],branches:[],purchases:[],returns:[]}}
+function save(){localStorage.setItem(KEY,JSON.stringify(state));renderAll()}
+function money(n){return state.currency+' '+Number(n||0).toLocaleString('en-KE',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function today(){return new Date().toISOString().slice(0,10)}
+function dateLabel(d){return new Date(d+'T00:00:00').toLocaleDateString()}
+function showPage(p){document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden'));document.getElementById(p).classList.remove('hidden');document.querySelectorAll('.navbtn').forEach(x=>x.classList.toggle('active',x.dataset.page===p));if(p==='products')renderProducts();if(p==='sales')renderSales();if(p==='expenses')renderExpenses();if(p==='purchases')renderPurchases();if(p==='returns')renderReturns();if(p==='customers')renderPeople('customer');if(p==='suppliers')renderPeople('supplier');if(p==='reports')renderReports();if(p==='team')renderStaff();if(p==='branches')renderBranches()}
+document.getElementById('nav').addEventListener('click',e=>{let b=e.target.closest('[data-page]');if(b)showPage(b.dataset.page)});
+function renderAll(){document.getElementById('shopTitle').textContent=state.shop;let d=today();let todays=state.sales.filter(s=>s.date===d),ex=state.expenses.filter(x=>x.date===d);let ts=todays.reduce((a,s)=>a+s.total,0),te=ex.reduce((a,x)=>a+x.amount,0),gp=todays.reduce((a,s)=>a+s.profit,0),low=state.products.filter(p=>p.qty<=p.min);
+document.getElementById('todaySales').textContent=money(ts);document.getElementById('todayExpenses').textContent=money(te);document.getElementById('grossProfit').textContent=money(gp);document.getElementById('productCount').textContent=state.products.length;document.getElementById('lowCount').textContent=low.length+' low-stock alerts';
+document.getElementById('recentSales').innerHTML=state.sales.length?table(['Receipt','Date','Payment','Total'],state.sales.slice().reverse().slice(0,5).map(s=>[s.id,s.date,s.payment,money(s.total)])):'<div class="empty">No sales yet. Record your first sale.</div>';
+document.getElementById('stockAlerts').innerHTML=low.length?table(['Product','In stock'],low.map(p=>[esc(p.name),'<span class="pill low">'+p.qty+' left</span>'])):'<div class="empty">No low-stock products 🎉</div>';
+renderProducts();renderSales();renderExpenses();renderPurchases();renderReturns();renderPeople('customer');renderPeople('supplier');renderReports();renderStaff();renderBranches()}
+function table(headers,rows){if(!rows.length)return '<div class="empty">No records yet.</div>';return '<table><thead><tr>'+headers.map(h=>'<th>'+h+'</th>').join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr>'+r.map(c=>'<td>'+c+'</td>').join('')+'</tr>').join('')+'</tbody></table>'}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function renderProducts(){let q=(document.getElementById('productSearch')?.value||'').toLowerCase(),f=document.getElementById('stockFilter')?.value||'all';let a=state.products.filter(p=>(p.name.toLowerCase().includes(q)||p.sku.toLowerCase().includes(q))&&(f==='all'||p.qty<=p.min));document.getElementById('productsTable').innerHTML=table(['Product','SKU','Cost','Selling price','Stock','Status','Actions'],a.map(p=>[esc(p.name),esc(p.sku),money(p.cost),money(p.price),p.qty,p.qty<=p.min?'<span class="pill low">Low stock</span>':'<span class="pill">In stock</span>','<div class="actions"><button class="secondary" onclick="editProduct(\''+p.id+'\')">Edit</button><button class="danger" onclick="deleteProduct(\''+p.id+'\')">Delete</button></div>']))}
+function renderSales(){let q=(document.getElementById('salesSearch')?.value||'').toLowerCase();let a=state.sales.filter(s=>s.id.toLowerCase().includes(q));document.getElementById('salesTable').innerHTML=table(['Receipt','Date','Items','Payment','Total','Receipt'],a.slice().reverse().map(s=>[s.id,s.date,s.items.reduce((n,i)=>n+i.qty,0),s.payment,money(s.total),'<button class="secondary" onclick="viewReceipt(\''+s.id+'\')">View</button>']))}
+function renderExpenses(){document.getElementById('expensesTable').innerHTML=table(['Date','Category','Description','Amount','Action'],state.expenses.slice().reverse().map(x=>[x.date,esc(x.category),esc(x.note),money(x.amount),'<button class="danger" onclick="deleteExpense(\''+x.id+'\')">Delete</button>']))}
+function renderReports(){let sales=state.sales,expenses=state.expenses;document.getElementById('allSales').textContent=money(sales.reduce((a,s)=>a+s.total,0));document.getElementById('allExpenses').textContent=money(expenses.reduce((a,x)=>a+x.amount,0));document.getElementById('unitsSold').textContent=sales.reduce((a,s)=>a+s.items.reduce((n,i)=>n+i.qty,0),0);document.getElementById('transactionCount').textContent=sales.length;document.getElementById('reportSales').innerHTML=table(['Date','Receipt','Payment','Sales','Gross profit'],sales.slice().reverse().map(s=>[s.date,s.id,s.payment,money(s.total),money(s.profit)]))}
+function modal(title,body,submit){document.getElementById('modalRoot').innerHTML='<div class="modalback" onclick="if(event.target===this)closeModal()"><div class="modal"><h2>'+title+'</h2>'+body+'<div class="modalfoot"><button class="secondary" onclick="closeModal()">Cancel</button><button class="primary" onclick="'+submit+'">Save</button></div></div></div>'}
+function closeModal(){document.getElementById('modalRoot').innerHTML=''}
+function openProduct(id){let p=state.products.find(x=>x.id===id)||{name:'',sku:'',category:'General',cost:'',price:'',qty:'',min:5};modal(id?'Edit product':'Add product','<div class="formgrid"><div class="field"><label>Product name</label><input id="pname" value="'+esc(p.name)+'"></div><div class="field"><label>SKU / code</label><input id="psku" value="'+esc(p.sku)+'"></div><div class="field"><label>Category</label><input id="pcat" value="'+esc(p.category)+'"></div><div class="field"><label>Cost price</label><input id="pcost" type="number" min="0" step=".01" value="'+p.cost+'"></div><div class="field"><label>Selling price</label><input id="pprice" type="number" min="0" step=".01" value="'+p.price+'"></div><div class="field"><label>Quantity in stock</label><input id="pqty" type="number" min="0" step="1" value="'+p.qty+'"></div><div class="field"><label>Low-stock alert at</label><input id="pmin" type="number" min="0" value="'+p.min+'"></div></div>','saveProduct(\''+(id||'')+'\')')}
+function editProduct(id){openProduct(id)}
+function saveProduct(id){let name=document.getElementById('pname').value.trim(),sku=document.getElementById('psku').value.trim(),cost=+document.getElementById('pcost').value,price=+document.getElementById('pprice').value,qty=+document.getElementById('pqty').value,min=+document.getElementById('pmin').value;if(!name||price<0||cost<0||qty<0){alert('Enter a product name and valid numbers.');return}let p={id:id||'P'+Date.now(),name,sku,category:document.getElementById('pcat').value,cost,price,qty,min};let i=state.products.findIndex(x=>x.id===id);if(i>=0)state.products[i]=p;else state.products.push(p);closeModal();save()}
+function deleteProduct(id){if(confirm('Delete this product?')){state.products=state.products.filter(p=>p.id!==id);save()}}
+let cart=[];
+function openSale(){if(!state.products.length){alert('Add at least one product before recording a sale.');showPage('products');return}cart=[];let opts=state.products.map(p=>'<option value="'+p.id+'">'+esc(p.name)+' · '+money(p.price)+' · stock '+p.qty+'</option>').join('');let cust='<option value="">Walk-in customer</option>'+state.customers.map(c=>'<option value="'+c.id+'">'+esc(c.name)+'</option>').join('');modal('New sale · Shopping cart','<div class="field"><label>Customer</label><select id="saleCustomer">'+cust+'</select></div><div class="formgrid" style="margin-top:12px"><div class="field"><label>Product</label><select id="saleProduct">'+opts+'</select></div><div class="field"><label>Quantity</label><input id="saleQty" type="number" min="1" value="1"></div></div><div style="margin-top:10px"><button class="secondary" onclick="addCartItem()">＋ Add item to cart</button></div><div id="cartPreview" style="margin-top:12px"></div><div class="field" style="margin-top:12px"><label>Payment method</label><select id="salePayment"><option>Cash</option><option>Mobile Money</option><option>Card</option><option>Other</option></select></div>','saveSale()');renderCart()}
+function addCartItem(){let p=state.products.find(x=>x.id===document.getElementById('saleProduct').value),qty=+document.getElementById('saleQty').value;if(!p||qty<1){alert('Choose a product and valid quantity.');return}let existing=cart.find(x=>x.productId===p.id),already=existing?existing.qty:0;if(qty+already>p.qty){alert('Not enough stock available.');return}if(existing)existing.qty+=qty;else cart.push({productId:p.id,name:p.name,qty,price:p.price,cost:p.cost});renderCart()}
+function renderCart(){let el=document.getElementById('cartPreview');if(!el)return;let total=cart.reduce((a,i)=>a+i.qty*i.price,0);el.innerHTML=cart.length?'<table><thead><tr><th>Item</th><th>Qty</th><th>Amount</th><th></th></tr></thead><tbody>'+cart.map((i,n)=>'<tr><td>'+esc(i.name)+'</td><td>'+i.qty+'</td><td>'+money(i.qty*i.price)+'</td><td><button class="danger" onclick="removeCartItem('+n+')">×</button></td></tr>').join('')+'</tbody></table><p style="text-align:right;font-weight:800">Cart total: '+money(total)+'</p>':'<div class="empty">Your cart is empty.</div>'}
+function removeCartItem(n){cart.splice(n,1);renderCart()}
+function saveSale(){if(!cart.length){alert('Add at least one item to the cart.');return}for(let i of cart){let p=state.products.find(x=>x.id===i.productId);if(!p||p.qty<i.qty){alert('Stock changed. Please review the cart.');return}}let total=0,profit=0;cart.forEach(i=>{let p=state.products.find(x=>x.id===i.productId);p.qty-=i.qty;total+=i.price*i.qty;profit+=(i.price-i.cost)*i.qty});let s={id:'GS'+Date.now().toString().slice(-8),date:today(),payment:document.getElementById('salePayment').value,customerId:document.getElementById('saleCustomer').value,total,profit,items:cart.map(i=>({productId:i.productId,name:i.name,qty:i.qty,price:i.price}))};state.sales.push(s);closeModal();save();viewReceipt(s.id)}
+function viewReceipt(id){let s=state.sales.find(x=>x.id===id);if(!s)return;let customer=state.customers.find(c=>c.id===s.customerId);let txt='GENERAL.S.O.M RETAIL\\n'+state.shop+'\\n------------------------------\\nReceipt: '+s.id+'\\nDate: '+s.date+(customer?'\\nCustomer: '+customer.name:'')+'\\n\\n'+s.items.map(i=>i.name+' x'+i.qty+'  '+money(i.price*i.qty)).join('\\n')+'\\n------------------------------\\nTOTAL: '+money(s.total)+'\\nPayment: '+s.payment+'\\n\\nThank you for shopping!';modal('Sales receipt','<div class="receipt">'+esc(txt)+'</div>','closeModal()');document.querySelector('.modalfoot').insertAdjacentHTML('afterbegin','<button class="secondary" onclick="printReceipt(\''+id+'\')">Print</button>')}
+function printReceipt(id){let s=state.sales.find(x=>x.id===id);let w=window.open('','_blank');if(!w)return;w.document.write('<pre style="font:14px monospace">'+esc('GENERAL.S.O.M RETAIL\\n'+state.shop+'\\nReceipt '+s.id+'\\n'+s.date+'\\n'+s.items.map(i=>i.name+' x'+i.qty+' '+money(i.price*i.qty)).join('\\n')+'\\nTOTAL '+money(s.total)+'\\n'+s.payment+'\\nThank you!')+'</pre>');w.print()}
+function openPerson(type,id){let list=type==='customer'?state.customers:state.suppliers,person=list.find(x=>x.id===id)||{name:'',phone:'',email:'',note:''};let title=type==='customer'?'Customer':'Supplier';modal((id?'Edit ':'Add ')+title,'<div class="formgrid"><div class="field"><label>Name / Business</label><input id="personName" value="'+esc(person.name)+'"></div><div class="field"><label>Phone</label><input id="personPhone" value="'+esc(person.phone)+'"></div><div class="field"><label>Email (optional)</label><input id="personEmail" type="email" value="'+esc(person.email)+'"></div><div class="field"><label>Notes</label><input id="personNote" value="'+esc(person.note)+'"></div></div>','savePerson(\''+type+'\',\''+(id||'')+'\')')}
+function savePerson(type,id){let name=document.getElementById('personName').value.trim();if(!name){alert('Enter a name.');return}let list=type==='customer'?state.customers:state.suppliers,obj={id:id||type[0].toUpperCase()+Date.now(),name,phone:document.getElementById('personPhone').value,email:document.getElementById('personEmail').value,note:document.getElementById('personNote').value};let i=list.findIndex(x=>x.id===id);if(i>=0)list[i]=obj;else list.push(obj);closeModal();save()}
+function renderPeople(type){let customer=type==='customer',list=customer?state.customers:state.suppliers,search=document.getElementById(customer?'customerSearch':'supplierSearch')?.value.toLowerCase()||'',target=document.getElementById(customer?'customersTable':'suppliersTable');if(!target)return;let rows=list.filter(x=>(x.name+' '+x.phone).toLowerCase().includes(search));target.innerHTML=table(['Name','Phone','Email','Notes','Actions'],rows.map(x=>[esc(x.name),esc(x.phone||'–'),esc(x.email||'–'),esc(x.note||'–'),'<div class="actions"><button class="secondary" onclick="openPerson(\''+type+'\',\''+x.id+'\')">Edit</button><button class="danger" onclick="deletePerson(\''+type+'\',\''+x.id+'\')">Delete</button></div>']))}
+function deletePerson(type,id){if(!confirm('Delete this record?'))return;let key=type==='customer'?'customers':'suppliers';state[key]=state[key].filter(x=>x.id!==id);save()}
+function openExpense(){modal('Add expense','<div class="formgrid"><div class="field"><label>Category</label><select id="ecat"><option>Rent</option><option>Transport</option><option>Wages</option><option>Utilities</option><option>Stock purchase</option><option>Other</option></select></div><div class="field"><label>Amount</label><input id="eamount" type="number" min=".01" step=".01"></div><div class="field" style="grid-column:1/-1"><label>Description</label><input id="enote" placeholder="What was this expense for?"></div></div>','saveExpense()')}
+function saveExpense(){let amount=+document.getElementById('eamount').value;if(amount<=0){alert('Enter an amount greater than zero.');return}state.expenses.push({id:'E'+Date.now(),date:today(),category:document.getElementById('ecat').value,amount,note:document.getElementById('enote').value});closeModal();save()}
+function deleteExpense(id){if(confirm('Delete this expense?')){state.expenses=state.expenses.filter(x=>x.id!==id);save()}}
+function openPurchase(){
+ if(!state.products.length){alert('Add products before recording a stock purchase.');showPage('products');return}
+ let suppliers='<option value="">Select supplier (optional)</option>'+state.suppliers.map(x=>'<option value="'+x.id+'">'+esc(x.name)+'</option>').join('');
+ let products=state.products.map(x=>'<option value="'+x.id+'">'+esc(x.name)+' · current stock '+x.qty+'</option>').join('');
+ modal('Record stock purchase','<div class="formgrid"><div class="field"><label>Supplier</label><select id="buySupplier">'+suppliers+'</select></div><div class="field"><label>Product</label><select id="buyProduct">'+products+'</select></div><div class="field"><label>Quantity received</label><input id="buyQty" type="number" min="1" step="1" value="1"></div><div class="field"><label>Unit cost</label><input id="buyCost" type="number" min="0" step=".01"></div><div class="field" style="grid-column:1/-1"><label>Reference / note</label><input id="buyNote" placeholder="Supplier invoice or delivery note"></div></div><p style="font-size:12px;color:#718096">This records goods already received, not an unpaid purchase order.</p>','savePurchase()');
+}
+function savePurchase(){let p=state.products.find(x=>x.id===document.getElementById('buyProduct').value),qty=Number(document.getElementById('buyQty').value),cost=Number(document.getElementById('buyCost').value);if(!p||!Number.isInteger(qty)||qty<1||!Number.isFinite(cost)||cost<0){alert('Enter a valid product, quantity and unit cost.');return}let supplierId=document.getElementById('buySupplier').value;p.qty+=qty;p.cost=cost;state.purchases.push({id:'PO'+Date.now().toString().slice(-8),date:today(),productId:p.id,productName:p.name,qty,unitCost:cost,total:qty*cost,supplierId,note:document.getElementById('buyNote').value});closeModal();save();showPage('purchases')}
+function renderPurchases(){let el=document.getElementById('purchasesTable');if(!el)return;el.innerHTML=table(['Date','Reference','Supplier','Product','Quantity','Unit cost','Total'],state.purchases.slice().reverse().map(x=>{let sup=state.suppliers.find(y=>y.id===x.supplierId);return [x.date,x.id,esc(sup?sup.name:'—'),esc(x.productName),x.qty,money(x.unitCost),money(x.total)]}))}
+function openReturn(){if(!state.sales.length){alert('There are no sales to return yet.');return}let opts=state.sales.slice().reverse().map(x=>'<option value="'+x.id+'">'+x.id+' · '+x.date+' · '+money(x.total)+'</option>').join('');modal('Record sales return','<div class="formgrid"><div class="field"><label>Original receipt</label><select id="returnSale" onchange="renderReturnOptions()">'+opts+'</select></div><div class="field"><label>Item</label><select id="returnItem" onchange="updateReturnLimit()"></select></div><div class="field"><label>Quantity returned</label><input id="returnQty" type="number" min="1" step="1" value="1"></div><div class="field"><label>Item condition</label><select id="returnCondition"><option value="Resalable">Resalable, return to stock</option><option value="Damaged">Damaged, do not restock</option></select></div><div class="field"><label>Reason</label><select id="returnReason"><option>Damaged item</option><option>Wrong item</option><option>Customer changed mind</option><option>Other</option></select></div><div class="field" style="grid-column:1/-1"><label>Notes</label><input id="returnNote" placeholder="Optional details"></div></div><p id="returnLimit" style="font-size:12px;color:#718096"></p>','saveReturn()');renderReturnOptions()}
+function returnableQty(sale,itemIndex){let saleItem=sale.items[itemIndex],already=state.returns.filter(r=>r.saleId===sale.id&&r.itemIndex===itemIndex).reduce((n,r)=>n+r.qty,0);return Math.max(0,saleItem.qty-already)}
+function renderReturnOptions(){let sale=state.sales.find(x=>x.id===document.getElementById('returnSale')?.value);let sel=document.getElementById('returnItem');if(!sale||!sel)return;sel.innerHTML=sale.items.map((it,i)=>'<option value="'+i+'" '+(returnableQty(sale,i)===0?'disabled':'')+'>'+esc(it.name)+' · '+returnableQty(sale,i)+' returnable</option>').join('');updateReturnLimit()}
+function updateReturnLimit(){let sale=state.sales.find(x=>x.id===document.getElementById('returnSale')?.value),i=Number(document.getElementById('returnItem')?.value),el=document.getElementById('returnLimit');if(el&&sale&&sale.items[i])el.textContent='Maximum returnable quantity: '+returnableQty(sale,i)}
+function saveReturn(){let sale=state.sales.find(x=>x.id===document.getElementById('returnSale').value),i=Number(document.getElementById('returnItem').value),qty=Number(document.getElementById('returnQty').value);if(!sale||!sale.items[i]||!Number.isInteger(qty)||qty<1||qty>returnableQty(sale,i)){alert('Choose a valid item and return quantity.');return}let it=sale.items[i],product=state.products.find(p=>it.productId?p.id===it.productId:p.name===it.name),condition=document.getElementById('returnCondition').value;if(product&&condition==='Resalable')product.qty+=qty;let amount=qty*it.price;state.returns.push({id:'RT'+Date.now().toString().slice(-8),date:today(),saleId:sale.id,itemIndex:i,productName:it.name,qty,amount,condition,reason:document.getElementById('returnReason').value,note:document.getElementById('returnNote').value});closeModal();save();showPage('returns')}
+function renderReturns(){let el=document.getElementById('returnsTable');if(!el)return;el.innerHTML=table(['Date','Return ID','Original receipt','Product','Qty','Refund value','Condition','Reason'],state.returns.slice().reverse().map(x=>[x.date,x.id,x.saleId,esc(x.productName),x.qty,money(x.amount),esc(x.condition||'Resalable'),esc(x.reason)]))}
+function saveSettings(){state.shop=document.getElementById('settingName').value.trim()||'My Shop';state.businessType=document.getElementById('settingBusinessType').value;state.currency=document.getElementById('settingCurrency').value;save();alert('Settings saved.')}
+function exportData(){let b=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='general-som-retail-v5-backup.json';a.click();URL.revokeObjectURL(a.href)}
+function resetData(){if(confirm('This will permanently erase data saved in this browser. Continue?')){localStorage.removeItem(KEY);state=load();save()}}
+
+function openStaff(id){
+  let x=state.staff.find(v=>v.id===id)||{name:'',phone:'',email:'',role:'Cashier'};
+  modal(id?'Edit staff member':'Add staff member',
+    '<div class="formgrid"><div class="field"><label>Full name</label><input id="staffName" value="'+esc(x.name)+'"></div><div class="field"><label>Phone</label><input id="staffPhone" value="'+esc(x.phone||'')+'"></div><div class="field"><label>Email</label><input id="staffEmail" type="email" value="'+esc(x.email||'')+'"></div><div class="field"><label>Role</label><select id="staffRole">'+['Owner','Manager','Supervisor','Cashier','Stock controller'].map(r=>'<option '+(x.role===r?'selected':'')+'>'+r+'</option>').join('')+'</select></div></div>',
+    'saveStaff(\''+(id||'')+'\')');
+}
+function saveStaff(id){
+  let name=document.getElementById('staffName').value.trim();
+  if(!name){alert('Enter the staff member name.');return}
+  let obj={id:id||'ST'+Date.now(),name,phone:document.getElementById('staffPhone').value,email:document.getElementById('staffEmail').value,role:document.getElementById('staffRole').value};
+  let i=state.staff.findIndex(v=>v.id===id);if(i>=0)state.staff[i]=obj;else state.staff.push(obj);
+  closeModal();save();
+}
+function renderStaff(){
+  let el=document.getElementById('staffTable');if(!el)return;
+  el.innerHTML=table(['Name','Phone','Email','Role','Actions'],state.staff.map(x=>[esc(x.name),esc(x.phone||'–'),esc(x.email||'–'),'<span class="pill">'+esc(x.role)+'</span>','<div class="actions"><button class="secondary" onclick="openStaff(\''+x.id+'\')">Edit</button><button class="danger" onclick="deleteStaff(\''+x.id+'\')">Delete</button></div>']));
+}
+function deleteStaff(id){if(confirm('Delete this staff record?')){state.staff=state.staff.filter(x=>x.id!==id);save()}}
+function openBranch(id){
+  let x=state.branches.find(v=>v.id===id)||{name:'',location:'',phone:''};
+  modal(id?'Edit branch':'Add branch',
+    '<div class="formgrid"><div class="field"><label>Branch name</label><input id="branchName" value="'+esc(x.name)+'"></div><div class="field"><label>Town / location</label><input id="branchLocation" value="'+esc(x.location||'')+'"></div><div class="field"><label>Contact phone</label><input id="branchPhone" value="'+esc(x.phone||'')+'"></div></div>',
+    'saveBranch(\''+(id||'')+'\')');
+}
+function saveBranch(id){
+  let name=document.getElementById('branchName').value.trim();
+  if(!name){alert('Enter a branch name.');return}
+  let obj={id:id||'BR'+Date.now(),name,location:document.getElementById('branchLocation').value,phone:document.getElementById('branchPhone').value};
+  let i=state.branches.findIndex(v=>v.id===id);if(i>=0)state.branches[i]=obj;else state.branches.push(obj);
+  closeModal();save();
+}
+function renderBranches(){
+  let el=document.getElementById('branchesTable');if(!el)return;
+  el.innerHTML=table(['Branch','Location','Phone','Actions'],state.branches.map(x=>[esc(x.name),esc(x.location||'–'),esc(x.phone||'–'),'<div class="actions"><button class="secondary" onclick="openBranch(\''+x.id+'\')">Edit</button><button class="danger" onclick="deleteBranch(\''+x.id+'\')">Delete</button></div>']));
+}
+function deleteBranch(id){if(confirm('Delete this branch record?')){state.branches=state.branches.filter(x=>x.id!==id);save()}}
+function restoreData(){
+  let file=document.getElementById('restoreFile').files[0];
+  if(!file){alert('Choose a JSON backup file first.');return}
+  let reader=new FileReader();
+  reader.onload=function(){
+    try{
+      let d=JSON.parse(reader.result);
+      let required=['products','sales','expenses','customers','suppliers'];
+      if(!d||!required.every(k=>Array.isArray(d[k]))){alert('This file does not look like a General.S.O.M Retail backup.');return}
+      if(!confirm('Restoring will replace the records currently saved in this browser. Continue?'))return;
+      state={shop:d.shop||'My Shop',businessType:d.businessType||'Small shop',currency:d.currency||'KSh',products:d.products,sales:d.sales,expenses:d.expenses,customers:d.customers,suppliers:d.suppliers,staff:Array.isArray(d.staff)?d.staff:[],branches:Array.isArray(d.branches)?d.branches:[],purchases:Array.isArray(d.purchases)?d.purchases:[],returns:Array.isArray(d.returns)?d.returns:[]};
+      save();alert('Backup restored successfully on this device.');
+    }catch(e){alert('Could not read this backup file.')}
+  };
+  reader.readAsText(file);
+}
+
+document.getElementById('today').textContent=new Date().toLocaleDateString(undefined,{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+document.getElementById('settingName').value=state.shop;document.getElementById('settingBusinessType').value=state.businessType;document.getElementById('settingCurrency').value=state.currency;renderAll();
+</script>
+</body>
+</html>
